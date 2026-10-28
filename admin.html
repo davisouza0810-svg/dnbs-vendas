@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Administrativo - E-commerce</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f4f9; color: #333; }
+        h1, h2 { color: #2c3e50; }
+        .box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 1000px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #c0392b; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        form { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin-top: 15px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #c0392b; color: white; padding: 9px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #a93226; }
+        .erro { color: red; font-size: 14px; font-weight: bold; }
+        .voltar { display: inline-block; margin-bottom: 20px; color: #2980b9; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <a href="/" class="voltar">&larr; Voltar para a Loja Virtual</a>
+        <h1>Painel Restrito - Administração</h1>
+
+        {% if session.get('admin_logado') %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <span>Bem-vindo, <strong>Administrador</strong>!</span>
+                <a href="/admin/logout" style="color: #c0392b; text-decoration: none; font-weight: bold;">Sair do Painel Admin</a>
+            </div>
+
+            <h2 style="margin-top: 30px;">Lista de Todos os Clientes Cadastrados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>CPF</th>
+                        <th>Género</th>
+                        <th>Nascimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nome }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.telefone or '-' }}</td>
+                        <td>{{ u.cpf or '-' }}</td>
+                        <td>{{ u.genero or '-' }}</td>
+                        <td>{{ u.data_nascimento or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Insira as credenciais de administrador para aceder aos dados dos clientes.</p>
+            {% if erro %}
+                <p class="erro">{{ erro }}</p>
+            {% endif %}
+            <form action="/admin" method="POST">
+                <input type="text" name="adm_user" placeholder="Utilizador Admin" required>
+                <input type="password" name="adm_senha" placeholder="Senha Admin" required>
+                <button type="submit">Entrar no Painel</button>
+            </form>
+        {% endif %}
+    </div>
+
+</body>
+</html>

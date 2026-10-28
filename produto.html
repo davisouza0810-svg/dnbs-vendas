@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ produto.produto }} - DNBS Vendas</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f8; color: #333; }
+        header { background-color: #002f6c; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 26px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo span { color: #4189e6; }
+        .container { max-width: 1000px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .detalhe-grid { display: flex; gap: 40px; }
+        .foto-area { flex: 1; text-align: center; }
+        .foto-area img { max-width: 100%; max-height: 350px; object-fit: contain; border-radius: 4px; }
+        .galeria-minaturas { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .galeria-minaturas img { width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+        .galeria-minaturas img:hover { border-color: #3483fa; }
+        .info-area { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .preco { font-size: 32px; color: #002f6c; font-weight: bold; }
+        .btn-comprar { background-color: #3483fa; color: white; padding: 15px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: block; }
+        .btn-comprar:hover { background-color: #2968c8; }
+        .voltar { display: inline-block; margin-bottom: 20px; color: #3483fa; text-decoration: none; font-weight: bold; }
+        .secao-avaliacoes { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
+        .comentario-box { background: #f9f9f9; padding: 12px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #3483fa; }
+        form textarea { width: 100%; height: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        form select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #3483fa; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    </style>
+    <script>
+        function mudarImagem(src) {
+            document.getElementById('imagem-principal').src = src;
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">DNBS<span>Vendas</span></a>
+        <a href="/logout" style="color: #fff; text-decoration: none; font-weight: bold; background: #001f4d; padding: 6px 12px; border-radius: 4px;">Sair</a>
+    </header>
+
+    <div class="container">
+        <a href="/" class="voltar">&larr; Voltar para a lista</a>
+
+        <div class="detalhe-grid">
+            <div class="foto-area">
+                <!-- Imagem Principal -->
+                <img id="imagem-principal" src="{{ produto.link if produto.link else 'https://via.placeholder.com/300' }}" alt="{{ produto.produto }}">
+                
+                <!-- Miniaturas de exemplo (pode associar links adicionais se desejar) -->
+                <div class="galeria-minaturas">
+                    <img src="{{ produto.link if produto.link else 'https://via.placeholder.com/300' }}" onclick="mudarImagem(this.src)" alt="Foto 1">
+                    <img src="https://via.placeholder.com/300/002f6c/ffffff?text=Foto+2" onclick="mudarImagem(this.src)" alt="Foto 2">
+                    <img src="https://via.placeholder.com/300/3483fa/ffffff?text=Foto+3" onclick="mudarImagem(this.src)" alt="Foto 3">
+                    <img src="https://via.placeholder.com/300/cccccc/000000?text=Foto+4" onclick="mudarImagem(this.src)" alt="Foto 4">
+                </div>
+            </div>
+
+            <div class="info-area">
+                <h1 style="color: #002f6c; margin: 0;">{{ produto.produto }}</h1>
+                <div class="preco">R$ {{ produto.preco_venda }}</div>
+                <p><strong>Stock disponível:</strong> {{ produto.estoque_atual }} unidades</p>
+                <p><strong>Descrição:</strong> {{ produto.descricao }}</p>
+                <a href="#" onclick="alert('Parabéns! Compra do produto {{ produto.produto }} efetuada com sucesso no DNBS Vendas!'); return false;" class="btn-comprar">Comprar Agora</a>
+            </div>
+        </div>
+
+        <!-- Secção de Avaliações -->
+        <div class="secao-avaliacoes">
+            <h3 style="color: #002f6c;">Opiniões sobre o produto</h3>
+
+            <div style="background: #f1f6fc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="color: #002f6c; margin-top: 0;">Deixe a sua avaliação</h4>
+                <form action="/produto/{{ produto.id }}" method="POST">
+                    <label>Classificação:</label>
+                    <select name="nota" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                        <option value="3">⭐⭐⭐ (3/5)</option>
+                        <option value="2">⭐⭐ (2/5)</option>
+                        <option value="1">⭐ (1/5)</option>
+                    </select>
+                    <label style="margin-top: 8px; display: block;">Comentário:</label>
+                    <textarea name="comentario" placeholder="O que achou do produto? Escreva a sua experiência..." required></textarea>
+                    <button type="submit" style="margin-top: 10px;">Enviar Avaliação</button>
+                </form>
+            </div>
+
+            {% if avaliacoes %}
+                {% for a in avaliacoes %}
+                <div class="comentario-box">
+                    <strong>{{ a.nome }}</strong> - Nota: {{ a.nota }}/5
+                    <p style="margin: 5px 0 0 0;">{{ a.comentario }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #666;">Ainda não existem avaliações para este produto. Seja o primeiro a avaliar!</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
