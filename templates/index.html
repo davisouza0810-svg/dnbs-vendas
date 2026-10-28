@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>DNBS Vendas - O marketplace do Brasil</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f8; color: #333; }
+        header { background-color: #002f6c; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo { font-size: 26px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo span { color: #4189e6; }
+        .user-info { font-size: 14px; color: #fff; }
+        .user-info a { color: #fff; font-weight: bold; text-decoration: none; margin-left: 10px; background: #3483fa; padding: 6px 12px; border-radius: 4px; }
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .auth-grid { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .box { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 400px; }
+        h2 { color: #002f6c; font-size: 18px; margin-bottom: 15px; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background-color: #3483fa; color: white; padding: 10px; border: none; border-radius: 4px; font-size: 15px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #2968c8; }
+        
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
+        .card-produto { background: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
+        .card-produto:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .card-produto img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 10px; }
+        .preco { font-size: 22px; color: #002f6c; margin: 10px 0; font-weight: bold; }
+        .nome-prod { font-size: 14px; color: #333; height: 40px; overflow: hidden; margin-bottom: 10px; }
+        .btn-ver-mais { background-color: #3483fa; color: white; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; font-weight: bold; display: block; }
+        .btn-ver-mais:hover { background-color: #2968c8; }
+        .link-admin { color: #fff; font-size: 13px; text-decoration: none; background: #001f4d; padding: 6px 12px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <a href="/" class="logo">DNBS<span>Vendas</span></a>
+        </div>
+        <div class="user-info">
+            {% if session.get('usuario_nome') %}
+                <span>Olá, <strong>{{ session['usuario_nome'] }}</strong></span>
+                <a href="/logout">Sair</a>
+            {% else %}
+                <a href="/admin" class="link-admin">Painel Admin</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="main-container">
+        {% if not session.get('usuario_id') %}
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #002f6c; font-size: 24px;">Faça login ou cadastre-se para ver as ofertas do DNBS Vendas</h1>
+            </div>
+            <div class="auth-grid">
+                <div class="box">
+                    <h2>Criar Conta</h2>
+                    <form action="/" method="POST">
+                        <input type="hidden" name="acao" value="cadastrar">
+                        <input type="text" name="nome" placeholder="Nome Completo" required>
+                        <input type="email" name="email" placeholder="E-mail" required>
+                        <input type="password" name="senha" placeholder="Senha" required>
+                        <input type="number" name="idade" placeholder="Idade">
+                        <input type="text" name="telefone" placeholder="Telefone">
+                        <input type="text" name="cpf" placeholder="CPF">
+                        <select name="genero">
+                            <option value="">Género</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                        <input type="date" name="data_nascimento">
+                        <button type="submit">Cadastrar</button>
+                    </form>
+                </div>
+
+                <div class="box">
+                    <h2>Entrar na sua conta</h2>
+                    <form action="/" method="POST">
+                        <input type="hidden" name="acao" value="login">
+                        <input type="email" name="login_email" placeholder="E-mail" required>
+                        <input type="password" name="login_senha" placeholder="Senha" required>
+                        <button type="submit">Entrar</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <h2 style="color: #002f6c;">Ofertas em destaque</h2>
+            <div class="grid-produtos">
+                {% for p in produtos %}
+                <div class="card-produto">
+                    <div>
+                        <img src="{{ p.link if p.link else 'https://via.placeholder.com/150' }}" alt="{{ p.produto }}">
+                        <div class="nome-prod">{{ p.produto }}</div>
+                        <div class="preco">R$ {{ p.preco_venda }}</div>
+                    </div>
+                    <a href="/produto/{{ p.id }}" class="btn-ver-mais">Ver mais</a>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
